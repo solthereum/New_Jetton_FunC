@@ -1,57 +1,68 @@
-import { Address, toNano } from '@ton/core';
-import { JettonMinter, JettonMinterContent, jettonContentToCell, jettonMinterConfigToCell } from '../wrappers/JettonMinter';
-import { compile, NetworkProvider, UIProvider} from '@ton/blueprint';
-import { promptAddress, promptBool, promptUrl } from '../wrappers/ui-utils';
+import { toNano } from '@ton/core';
+import { JettonMinter, jettonContentToCell } from '../wrappers/JettonMinter';
+import { compile, NetworkProvider} from '@ton/blueprint';
+import { WalletContractV4 } from '@ton/ton';
+import { mnemonicToWalletKey } from "ton-crypto";
+import { buildOnchainMetadata } from "./utils/jetton-helpers";
+import * as dotenv from "dotenv";
+dotenv.config();
 
-const formatUrl = "https://github.com/ton-blockchain/TEPs/blob/master/text/0064-token-data-standard.md#jetton-metadata-example-offchain";
-const exampleContent = {
-                          "name": "Sample Jetton",
-                          "description": "Sample of Jetton",
-                          "symbol": "JTN",
-                          "decimals": 0,
-                          "image": "https://www.svgrepo.com/download/483336/coin-vector.svg"
-                       };
-const urlPrompt = 'Please specify url pointing to jetton metadata(json):';
+const jettonParams = {
+    name: "JETTON12",
+    description: "This is 5% commission jetton",
+    symbol: "JETTON12",
+    image: "https://gateway.pinata.cloud/ipfs/QmdKpdkk4YgJnrruQVi7C6ocBAzZ1P3N5ZcRbjXihJYDeq",
+};
 
 export async function run(provider: NetworkProvider) {
-    const ui       = provider.ui();
-    const sender   = provider.sender();
-    const adminPrompt = `Please specify admin address`;
-    ui.write(`Jetton deployer\nCurrent deployer onli supports off-chain format:${formatUrl}`);
 
-    let admin      = await promptAddress(adminPrompt, ui, sender.address);
-    ui.write(`Admin address:${admin}\n`);
-    let contentUrl = await promptUrl(urlPrompt, ui);
-    ui.write(`Jetton content url:${contentUrl}`);
+    let mnemonics = (process.env.mnemonics || "").toString();
+    const key = await mnemonicToWalletKey(mnemonics.split(" "));
 
-    let dataCorrect = false;
-    do {
-        ui.write("Please verify data:\n")
-        ui.write(`Admin:${admin}\n\n`);
-        ui.write('Metadata url:' + contentUrl);
-        dataCorrect = await promptBool('Is everything ok?(y/n)', ['y','n'], ui);
-        if(!dataCorrect) {
-            const upd = await ui.choose('What do you want to update?', ['Admin', 'Url'], (c) => c);
+    const wallet = WalletContractV4.create({ publicKey: key.publicKey, workchain: 0 });
 
-            if(upd == 'Admin') {
-                admin = await promptAddress(adminPrompt, ui, sender.address);
-            }
-            else {
-                contentUrl = await promptUrl(urlPrompt, ui);
-            }
-        }
+    if (!await provider.isContractDeployed(wallet.address)) {
+        return console.log("Owner wallet is not deployed");
+    }
 
-    } while(!dataCorrect);
+    const walletContract = provider.open(wallet);
+    const walletSender = walletContract.sender(key.secretKey);
 
-    const content = jettonContentToCell({type:1,uri:contentUrl});
+    const seqno = await walletContract.getSeqno();
+    
+    let admin = wallet.address;
 
+    let content = buildOnchainMetadata(jettonParams);
+
+    // const content = jettonContentToCell({type:0,uri:metadataURI});
+    
     const wallet_code = await compile('JettonWallet');
 
     const minter  = JettonMinter.createFromConfig({admin,
                                                   content,
                                                   wallet_code,
                                                   }, 
-                                                  await compile('JettonMinter'));
+                                                  await compile('JettonMinter'));   
+                                                  
+    console.log("contract  to be deployed:", minter.address.toString());
+    if (await provider.isContractDeployed(minter.address)) {
+            return console.log("Same Jetton already deployed");
+    }
 
-    await provider.deploy(minter, toNano('0.05'));
+    await provider.open(minter).sendDeploy(walletSender, toNano('0.01'));    
+    await provider.waitForDeploy(minter.address);    
+    
+    await provider.open(minter).sendMint(walletSender, admin, toNano('1000000'), toNano('0.01'), toNano('0.05'));
+
+    let currentSeqno = seqno;
+    while (currentSeqno == seqno) {
+        console.log("waiting for transaction to confirm...");
+        await sleep(1500);
+        currentSeqno = await walletContract.getSeqno();
+    }
+    console.log("Mint transaction confirmed!");
+}
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
