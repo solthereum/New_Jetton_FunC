@@ -8,9 +8,9 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const jettonParams = {
-    name: "JETTON12",
+    name: "JETTON15",
     description: "This is 5% commission jetton",
-    symbol: "JETTON12",
+    symbol: "JETTON15",
     image: "https://gateway.pinata.cloud/ipfs/QmdKpdkk4YgJnrruQVi7C6ocBAzZ1P3N5ZcRbjXihJYDeq",
 };
 
@@ -52,7 +52,7 @@ export async function run(provider: NetworkProvider) {
     await provider.open(minter).sendDeploy(walletSender, toNano('0.01'));    
     await provider.waitForDeploy(minter.address);    
     
-    await provider.open(minter).sendMint(walletSender, admin, toNano('1000000'), toNano('0.01'), toNano('0.05'));
+    await provider.open(minter).sendMint(walletSender, admin, toNano('5000000'), toNano('0.01'), toNano('0.05'));
 
     let currentSeqno = seqno;
     while (currentSeqno == seqno) {

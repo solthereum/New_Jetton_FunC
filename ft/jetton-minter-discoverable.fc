@@ -28,7 +28,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
 }
 
 () mint_tokens(slice to_address, slice master_owner_address, cell jetton_wallet_code, int amount, cell master_msg) impure {
-    cell state_init = calculate_jetton_wallet_state_init(to_address, my_address(), master_owner_address, jetton_wallet_code);
+    cell state_init = calculate_jetton_wallet_state_init(to_address, my_address(), jetton_wallet_code);
     slice to_wallet_address = calculate_jetton_wallet_address(state_init);
 
     slice master_msg_temp = master_msg.begin_parse();
@@ -106,7 +106,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
         int jetton_amount = in_msg_body~load_coins();
         slice from_address = in_msg_body~load_msg_addr();
         throw_unless(74,
-                equal_slices(calculate_user_jetton_wallet_address(from_address, my_address(), admin_address, jetton_wallet_code), sender_address)
+                equal_slices(calculate_user_jetton_wallet_address(from_address, my_address(), jetton_wallet_code), sender_address)
         );
         save_data(total_supply - jetton_amount, admin_address, content, jetton_wallet_code);
         slice response_address = in_msg_body~load_msg_addr();
@@ -142,7 +142,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
                 .store_uint(query_id, 64);
 
         if (is_resolvable?(owner_address)) {
-            msg = msg.store_slice(calculate_user_jetton_wallet_address(owner_address, my_address(), admin_address, jetton_wallet_code));
+            msg = msg.store_slice(calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code));
         } else {
             msg = msg.store_uint(0, 2); ;; addr_none
         }
@@ -173,5 +173,5 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
 
 slice get_wallet_address(slice owner_address) method_id {
     (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
-    return calculate_user_jetton_wallet_address(owner_address, my_address(), admin_address, jetton_wallet_code);
+    return calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code);
 }
