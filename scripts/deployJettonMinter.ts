@@ -9,7 +9,7 @@ dotenv.config();
 
 const jettonParams = {
     name: "JETTON16",
-    description: "This is 5% commission jetton",
+    description: "5% commission jetton",
     symbol: "JETTON16",
     image: "https://gateway.pinata.cloud/ipfs/QmdKpdkk4YgJnrruQVi7C6ocBAzZ1P3N5ZcRbjXihJYDeq",
 };
