@@ -2,3 +2,4 @@
 /node_modules
 /tags
 /package-lock.json
+.env
