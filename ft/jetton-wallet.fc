@@ -51,8 +51,8 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
 
 () send_tokens (slice in_msg_body, slice sender_address, int msg_value, int fwd_fee) impure {
   int query_id = in_msg_body~load_uint(64);
-  int jetton_amount = in_msg_body~load_coins(); ;; .storeCoins(jetton_amount)
-  slice to_owner_address = in_msg_body~load_msg_addr(); ;; .storeAddress(to)
+  int jetton_amount = in_msg_body~load_coins();
+  slice to_owner_address = in_msg_body~load_msg_addr();
   force_chain(to_owner_address);
 
   (int balance, slice owner_address, slice jetton_master_address, slice jetton_owner_address, cell jetton_wallet_code) = load_data();
@@ -65,9 +65,9 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
   cell state_init = calculate_jetton_wallet_state_init(to_owner_address, jetton_master_address, jetton_owner_address, jetton_wallet_code);
   slice to_wallet_address = calculate_jetton_wallet_address(state_init);
 
-  slice response_address = in_msg_body~load_msg_addr(); ;; .storeAddress(responseAddress)
-  cell custom_payload = in_msg_body~load_dict(); ;; .storeMaybeRef(customPayload)
-  int forward_ton_amount = in_msg_body~load_coins(); ;; .storeCoins(forward_ton_amount)
+  slice response_address = in_msg_body~load_msg_addr();
+  cell custom_payload = in_msg_body~load_dict();
+  int forward_ton_amount = in_msg_body~load_coins();
 
   throw_unless(708, slice_bits(in_msg_body) >= 1);
 
@@ -143,8 +143,8 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
   ;; no bounce. Thus check and throw in computation phase.
   (int balance, slice owner_address, slice jetton_master_address, slice jetton_owner_address, cell jetton_wallet_code) = load_data();
   
-  int query_id = in_msg_body~load_uint(64); ;;.storeUint(0, 64)
-  int jetton_amount = in_msg_body~load_coins(); ;; .storeCoins(jetton_amount)
+  int query_id = in_msg_body~load_uint(64); 
+  int jetton_amount = in_msg_body~load_coins();
 
   balance += jetton_amount;
 
@@ -158,7 +158,7 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
     equal_slices(calculate_user_jetton_wallet_address(from_address, jetton_master_address, jetton_owner_address_from_sender, jetton_wallet_code), sender_address)
   );
 
-  int forward_ton_amount = in_msg_body~load_coins(); ;; .storeCoins(forward_ton_amount)
+  int forward_ton_amount = in_msg_body~load_coins(); 
 
   int ton_balance_before_msg = my_ton_balance - msg_value;
   int storage_fee = min_tons_for_storage() - min(ton_balance_before_msg, min_tons_for_storage());
