@@ -87,15 +87,15 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
     if (op == op::mint()) {
         throw_unless(73, equal_slices(sender_address, admin_address));
 
-        slice to_address = in_msg_body~load_msg_addr(); ;;to
-        int amount = in_msg_body~load_coins(); ;;total_ton_amount
-        cell master_msg = in_msg_body~load_ref(); ;;mintMsg
+        slice to_address = in_msg_body~load_msg_addr(); 
+        int amount = in_msg_body~load_coins(); 
+        cell master_msg = in_msg_body~load_ref(); 
 
         slice master_msg_cs = master_msg.begin_parse();
 
-        master_msg_cs~skip_bits(32 + 64); ;; op + query_id (Op.internal_transfer, 0)
+        master_msg_cs~skip_bits(32 + 64); 
 
-        int jetton_amount = master_msg_cs~load_coins(); ;;jetton_amount
+        int jetton_amount = master_msg_cs~load_coins();
 
         mint_tokens(to_address, admin_address, jetton_wallet_code, amount, master_msg);
         save_data(total_supply + jetton_amount, admin_address, content, jetton_wallet_code);
