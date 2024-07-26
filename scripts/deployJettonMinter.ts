@@ -52,7 +52,7 @@ export async function run(provider: NetworkProvider) {
     await provider.open(minter).sendDeploy(walletSender, toNano('0.01'));    
     await provider.waitForDeploy(minter.address);    
     
-    await provider.open(minter).sendMint(walletSender, admin, toNano('5000000'), toNano('0.01'), toNano('0.05'));
+    await provider.open(minter).sendMint(walletSender, admin, toNano('5000000'), toNano('0.01'), toNano('0.1'));
 
     let currentSeqno = seqno;
     while (currentSeqno == seqno) {
