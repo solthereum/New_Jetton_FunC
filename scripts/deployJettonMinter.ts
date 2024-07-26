@@ -8,9 +8,9 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const jettonParams = {
-    name: "JETTON15",
+    name: "JETTON16",
     description: "This is 5% commission jetton",
-    symbol: "JETTON15",
+    symbol: "JETTON16",
     image: "https://gateway.pinata.cloud/ipfs/QmdKpdkk4YgJnrruQVi7C6ocBAzZ1P3N5ZcRbjXihJYDeq",
 };
 
