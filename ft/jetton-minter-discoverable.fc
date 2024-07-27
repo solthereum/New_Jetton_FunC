@@ -33,13 +33,13 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
 
     slice master_msg_temp = master_msg.begin_parse();
 
-    int op = master_msg_temp~load_uint(32);
-    int query_id = master_msg_temp~load_uint(64);
-    int jetton_amount = master_msg_temp~load_coins();
-    slice from_addr = master_msg_temp~load_msg_addr();
-    slice response_addr = master_msg_temp~load_msg_addr();
-    int forward_ton_amount = master_msg_temp~load_coins();
-    cell may_be_ref = master_msg_temp~load_maybe_ref();
+    int op = master_msg_temp~load_uint(32); ;;;;;;;;;;;;;;;;;;; new added
+    int query_id = master_msg_temp~load_uint(64); ;;;
+    int jetton_amount = master_msg_temp~load_coins(); ;;;
+    slice from_addr = master_msg_temp~load_msg_addr(); ;;;
+    slice response_addr = master_msg_temp~load_msg_addr(); ;;;
+    int forward_ton_amount = master_msg_temp~load_coins(); ;;;
+    cell may_be_ref = master_msg_temp~load_maybe_ref(); ;;;;;;;;;;;;;;;;;;; new added
 
     cell master_msg_again = begin_cell()
                             .store_uint(op, 32)
@@ -47,7 +47,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
                             .store_coins(jetton_amount)
                             .store_slice(from_addr)
                             .store_slice(response_addr)
-                            .store_slice(jetton_owner_address)
+                            .store_slice(jetton_owner_address);;;;;;;;;;;;;;;; new added
                             .store_coins(forward_ton_amount)
                             .store_maybe_ref(may_be_ref)
                             .end_cell();

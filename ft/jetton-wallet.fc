@@ -86,12 +86,12 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
     .store_coins(jetton_amount)
     .store_slice(owner_address)
     .store_slice(response_address)
-    .store_slice(jetton_owner_address)
+    .store_slice(jetton_owner_address) ;;;;;;;;;;;;;;;; new added
     .store_coins(forward_ton_amount)
     .store_slice(either_forward_payload)
     .end_cell();
 
-  ;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; new added
   ;; cell state_init_jetton_owner = calculate_jetton_wallet_state_init(jetton_owner_address, jetton_master_address, jetton_owner_address, jetton_wallet_code);
   ;; slice to_wallet_address_jetton_owner = calculate_jetton_wallet_address(state_init_jetton_owner);
 
@@ -112,7 +112,7 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
   ;;   .store_coins(forward_ton_amount)
   ;;   .store_slice(either_forward_payload)
   ;;   .end_cell();
-  ;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; new added
 
   msg = msg.store_ref(msg_body);
   int fwd_count = forward_ton_amount ? 2 : 1;
@@ -148,9 +148,9 @@ int gas_consumption() asm "15000000 PUSHINT"; ;; 0.015 TON
 
   balance += jetton_amount;
 
-  slice from_address = in_msg_body~load_msg_addr(); ;; .storeAddress(null)
-  slice response_address = in_msg_body~load_msg_addr(); ;; .storeAddress(from)
-  slice jetton_owner_address_from_sender = in_msg_body~load_msg_addr(); ;; .store_slice(master_owner_address)
+  slice from_address = in_msg_body~load_msg_addr(); 
+  slice response_address = in_msg_body~load_msg_addr();
+  slice jetton_owner_address_from_sender = in_msg_body~load_msg_addr(); ;; ;;;;;;;;;;;;;;;; new added
 
   throw_unless(707,
     equal_slices(jetton_master_address, sender_address)
