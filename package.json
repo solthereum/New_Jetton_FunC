@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
+    "@ston-fi/funcbox": "^0.1.1",
     "@ton/ton": "^14.0.0",
     "dotenv": "^16.4.5",
     "typescript": "^5.5.4"

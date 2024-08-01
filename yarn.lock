@@ -716,6 +716,11 @@
     "@smithy/util-buffer-from" "^2.2.0"
     tslib "^2.6.2"
 
+"@ston-fi/funcbox@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@ston-fi/funcbox/-/funcbox-0.1.1.tgz#bfedea432803987bdb99ba90136874a7fce1ca20"
+  integrity sha512-klQ0YlCSRh8JdDc1ZomUMQvDh6ujjRCJJd/rKdfetsa0eWiZjsZf6A43Uq+QGo3tHQIuyUjoDvN0NFUxj1hZlg==
+
 "@swc/core-darwin-arm64@1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@swc/core-darwin-arm64/-/core-darwin-arm64-1.7.0.tgz#fdc694dd6e8543f3efea0619a6fba9ce82939205"

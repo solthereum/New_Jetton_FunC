@@ -28,29 +28,8 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
 }
 
 () mint_tokens(slice to_address, slice jetton_owner_address, cell jetton_wallet_code, int amount, cell master_msg) impure {
-    cell state_init = calculate_jetton_wallet_state_init(to_address, my_address(), jetton_owner_address, jetton_wallet_code);
+    cell state_init = calculate_jetton_wallet_state_init(to_address, my_address(), jetton_wallet_code);
     slice to_wallet_address = calculate_jetton_wallet_address(state_init);
-
-    slice master_msg_temp = master_msg.begin_parse();
-
-    int op = master_msg_temp~load_uint(32); ;;;;;;;;;;;;;;;;;;; new added
-    int query_id = master_msg_temp~load_uint(64); ;;;
-    int jetton_amount = master_msg_temp~load_coins(); ;;;
-    slice from_addr = master_msg_temp~load_msg_addr(); ;;;
-    slice response_addr = master_msg_temp~load_msg_addr(); ;;;
-    int forward_ton_amount = master_msg_temp~load_coins(); ;;;
-    cell may_be_ref = master_msg_temp~load_maybe_ref(); ;;;;;;;;;;;;;;;;;;; new added
-
-    cell master_msg_again = begin_cell()
-                            .store_uint(op, 32)
-                            .store_uint(query_id, 64)
-                            .store_coins(jetton_amount)
-                            .store_slice(from_addr)
-                            .store_slice(response_addr)
-                            .store_slice(jetton_owner_address);;;;;;;;;;;;;;;; new added
-                            .store_coins(forward_ton_amount)
-                            .store_maybe_ref(may_be_ref)
-                            .end_cell();
 
     var msg = begin_cell()
             .store_uint(0x18, 6)
@@ -58,7 +37,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
             .store_coins(amount) 
             .store_uint(4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
             .store_ref(state_init)
-            .store_ref(master_msg_again);
+            .store_ref(master_msg);
     send_raw_message(msg.end_cell(), 1); 
 }
 
@@ -106,7 +85,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
         int jetton_amount = in_msg_body~load_coins();
         slice from_address = in_msg_body~load_msg_addr();
         throw_unless(74,
-                equal_slices(calculate_user_jetton_wallet_address(from_address, my_address(), admin_address, jetton_wallet_code), sender_address)
+                equal_slices(calculate_user_jetton_wallet_address(from_address, my_address(), jetton_wallet_code), sender_address)
         );
         save_data(total_supply - jetton_amount, admin_address, content, jetton_wallet_code);
         slice response_address = in_msg_body~load_msg_addr();
@@ -142,7 +121,7 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
                 .store_uint(query_id, 64);
 
         if (is_resolvable?(owner_address)) {
-            msg = msg.store_slice(calculate_user_jetton_wallet_address(owner_address, my_address(), admin_address, jetton_wallet_code));
+            msg = msg.store_slice(calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code));
         } else {
             msg = msg.store_uint(0, 2); ;; addr_none
         }
@@ -173,5 +152,5 @@ int provide_address_gas_consumption() asm "10000000 PUSHINT";
 
 slice get_wallet_address(slice owner_address) method_id {
     (int total_supply, slice admin_address, cell content, cell jetton_wallet_code) = load_data();
-    return calculate_user_jetton_wallet_address(owner_address, my_address(), admin_address, jetton_wallet_code);
+    return calculate_user_jetton_wallet_address(owner_address, my_address(), jetton_wallet_code);
 }
