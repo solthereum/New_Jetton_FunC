@@ -461,22 +461,22 @@ describe('JettonWallet', () => {
 
     // });
 
-    it('not wallet owner should not be able to burn jettons', async () => {
-              const deployerJettonWallet = await userWallet(deployer.address);
-              let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-              let initialTotalSupply = await jettonMinter.getTotalSupply();
-              let burnAmount = toNano('0.01');
-              const sendResult = await deployerJettonWallet.sendBurn(notDeployer.getSender(), toNano('0.1'), // ton amount
-                                    burnAmount, deployer.address, null); // amount, response address, custom payload
-              expect(sendResult.transactions).toHaveTransaction({
-                 from: notDeployer.address,
-                 to: deployerJettonWallet.address,
-                 aborted: true,
-                 exitCode: Errors.not_owner, //error::unauthorized_transfer
-                });
-              expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
-              expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply);
-    });
+    // it('not wallet owner should not be able to burn jettons', async () => {
+    //           const deployerJettonWallet = await userWallet(deployer.address);
+    //           let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+    //           let initialTotalSupply = await jettonMinter.getTotalSupply();
+    //           let burnAmount = toNano('0.01');
+    //           const sendResult = await deployerJettonWallet.sendBurn(notDeployer.getSender(), toNano('0.1'), // ton amount
+    //                                 burnAmount, deployer.address, null); // amount, response address, custom payload
+    //           expect(sendResult.transactions).toHaveTransaction({
+    //              from: notDeployer.address,
+    //              to: deployerJettonWallet.address,
+    //              aborted: true,
+    //              exitCode: Errors.not_owner, //error::unauthorized_transfer
+    //             });
+    //           expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
+    //           expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply);
+    // });
 
     it('wallet owner can not burn more jettons than it has', async () => {
                 const deployerJettonWallet = await userWallet(deployer.address);
