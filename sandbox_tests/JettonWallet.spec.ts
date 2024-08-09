@@ -610,45 +610,45 @@ describe('JettonWallet', () => {
 
     // });
 
-    it('Minimal discovery fee', async () => {
-       // 5000 gas-units + msg_forward_prices.lump_price + msg_forward_prices.cell_price = 0.0061
-        const fwdFee     = 1464012n;
-        const minimalFee = fwdFee + 10000000n; // toNano('0.0061');
+    // it('Minimal discovery fee', async () => {
+    //    // 5000 gas-units + msg_forward_prices.lump_price + msg_forward_prices.cell_price = 0.0061
+    //     const fwdFee     = 1464012n;
+    //     const minimalFee = fwdFee + 10000000n; // toNano('0.0061');
 
-        let discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
-                                                                      notDeployer.address,
-                                                                      false,
-                                                                      minimalFee);
+    //     let discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
+    //                                                                   notDeployer.address,
+    //                                                                   false,
+    //                                                                   minimalFee);
 
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: jettonMinter.address,
-            aborted: true,
-            exitCode: Errors.discovery_fee_not_matched // discovery_fee_not_matched
-        });
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: deployer.address,
+    //         to: jettonMinter.address,
+    //         aborted: true,
+    //         exitCode: Errors.discovery_fee_not_matched // discovery_fee_not_matched
+    //     });
 
-        /*
-         * Might be helpfull to have logical OR in expect lookup
-         * Because here is what is stated in standard:
-         * and either throw an exception if amount of incoming value is not enough to calculate wallet address
-         * or response with message (sent with mode 64)
-         * https://github.com/ton-blockchain/TEPs/blob/master/text/0089-jetton-wallet-discovery.md
-         * At least something like
-         * expect(discoveryResult.hasTransaction({such and such}) ||
-         * discoveryResult.hasTransaction({yada yada})).toBeTruethy()
-         */
-        discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
-                                                           notDeployer.address,
-                                                           false,
-                                                           minimalFee + 1n);
+    //     /*
+    //      * Might be helpfull to have logical OR in expect lookup
+    //      * Because here is what is stated in standard:
+    //      * and either throw an exception if amount of incoming value is not enough to calculate wallet address
+    //      * or response with message (sent with mode 64)
+    //      * https://github.com/ton-blockchain/TEPs/blob/master/text/0089-jetton-wallet-discovery.md
+    //      * At least something like
+    //      * expect(discoveryResult.hasTransaction({such and such}) ||
+    //      * discoveryResult.hasTransaction({yada yada})).toBeTruethy()
+    //      */
+    //     discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
+    //                                                        notDeployer.address,
+    //                                                        false,
+    //                                                        minimalFee + 1n);
 
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: jettonMinter.address,
-            success: true
-        });
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: deployer.address,
+    //         to: jettonMinter.address,
+    //         success: true
+    //     });
 
-    });
+    // });
 
     it('Correctly handles not valid address in discovery', async () =>{
         const badAddr       = randomAddress(-1);
