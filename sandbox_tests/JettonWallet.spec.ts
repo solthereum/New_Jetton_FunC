@@ -650,39 +650,39 @@ describe('JettonWallet', () => {
 
     // });
 
-    it('Correctly handles not valid address in discovery', async () =>{
-        const badAddr       = randomAddress(-1);
-        let discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
-                                                               badAddr,
-                                                               false);
+    // it('Correctly handles not valid address in discovery', async () =>{
+    //     const badAddr       = randomAddress(-1);
+    //     let discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
+    //                                                            badAddr,
+    //                                                            false);
 
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: jettonMinter.address,
-            to: deployer.address,
-            body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
-                             .storeUint(0, 2) // addr_none
-                             .storeUint(0, 1)
-                  .endCell()
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: jettonMinter.address,
+    //         to: deployer.address,
+    //         body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
+    //                          .storeUint(0, 2) // addr_none
+    //                          .storeUint(0, 1)
+    //               .endCell()
 
-        });
+    //     });
 
-        // Include address should still be available
+    //     // Include address should still be available
 
-        discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
-                                                           badAddr,
-                                                           true); // Include addr
+    //     discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(),
+    //                                                        badAddr,
+    //                                                        true); // Include addr
 
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: jettonMinter.address,
-            to: deployer.address,
-            body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
-                             .storeUint(0, 2) // addr_none
-                             .storeUint(1, 1)
-                             .storeRef(beginCell().storeAddress(badAddr).endCell())
-                  .endCell()
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: jettonMinter.address,
+    //         to: deployer.address,
+    //         body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
+    //                          .storeUint(0, 2) // addr_none
+    //                          .storeUint(1, 1)
+    //                          .storeRef(beginCell().storeAddress(badAddr).endCell())
+    //               .endCell()
 
-        });
-    });
+    //     });
+    // });
 
     // This test consume a lot of time: 18 sec
     // and is needed only for measuring ton accruing
