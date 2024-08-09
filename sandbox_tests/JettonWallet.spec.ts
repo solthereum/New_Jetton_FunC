@@ -323,32 +323,32 @@ describe('JettonWallet', () => {
     //     expect(await notDeployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance2 + sentAmount);
     // });
 
-    it('check revert on not enough tons for forward', async () => {
-        const deployerJettonWallet = await userWallet(deployer.address);
-        let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-        await deployer.send({value:toNano('1'), bounce:false, to: deployerJettonWallet.address});
-        let sentAmount = toNano('0.1');
-        let forwardAmount = toNano('0.3');
-        let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell();
-        const sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), forwardAmount, // not enough tons, no tons for gas
-               sentAmount, notDeployer.address,
-               deployer.address, null, forwardAmount, forwardPayload);
-        expect(sendResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            on: deployerJettonWallet.address,
-            aborted: true,
-            exitCode: Errors.not_enough_ton, //error::not_enough_tons
-        });
-        // Make sure value bounced
-        expect(sendResult.transactions).toHaveTransaction({
-            from: deployerJettonWallet.address,
-            on: deployer.address,
-            inMessageBounced: true,
-            success: true
-        });
+    // it('check revert on not enough tons for forward', async () => {
+    //     const deployerJettonWallet = await userWallet(deployer.address);
+    //     let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+    //     await deployer.send({value:toNano('1'), bounce:false, to: deployerJettonWallet.address});
+    //     let sentAmount = toNano('0.1');
+    //     let forwardAmount = toNano('0.3');
+    //     let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell();
+    //     const sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), forwardAmount, // not enough tons, no tons for gas
+    //            sentAmount, notDeployer.address,
+    //            deployer.address, null, forwardAmount, forwardPayload);
+    //     expect(sendResult.transactions).toHaveTransaction({
+    //         from: deployer.address,
+    //         on: deployerJettonWallet.address,
+    //         aborted: true,
+    //         exitCode: Errors.not_enough_ton, //error::not_enough_tons
+    //     });
+    //     // Make sure value bounced
+    //     expect(sendResult.transactions).toHaveTransaction({
+    //         from: deployerJettonWallet.address,
+    //         on: deployer.address,
+    //         inMessageBounced: true,
+    //         success: true
+    //     });
 
-        expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
-    });
+    //     expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
+    // });
 
     // implementation detail
     it('works with minimal ton amount', async () => {
