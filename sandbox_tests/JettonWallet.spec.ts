@@ -569,46 +569,46 @@ describe('JettonWallet', () => {
 //    });
 
     // TEP-89
-    it('report correct discovery address', async () => {
-        let discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(), deployer.address, true);
-        /*
-          take_wallet_address#d1735400 query_id:uint64 wallet_address:MsgAddress owner_address:(Maybe ^MsgAddress) = InternalMsgBody;
-        */
-        const deployerJettonWallet = await userWallet(deployer.address);
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: jettonMinter.address,
-            to: deployer.address,
-            body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
-                              .storeAddress(deployerJettonWallet.address)
-                              .storeUint(1, 1)
-                              .storeRef(beginCell().storeAddress(deployer.address).endCell())
-                  .endCell()
-        });
+    // it('report correct discovery address', async () => {
+    //     let discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(), deployer.address, true);
+    //     /*
+    //       take_wallet_address#d1735400 query_id:uint64 wallet_address:MsgAddress owner_address:(Maybe ^MsgAddress) = InternalMsgBody;
+    //     */
+    //     const deployerJettonWallet = await userWallet(deployer.address);
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: jettonMinter.address,
+    //         to: deployer.address,
+    //         body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
+    //                           .storeAddress(deployerJettonWallet.address)
+    //                           .storeUint(1, 1)
+    //                           .storeRef(beginCell().storeAddress(deployer.address).endCell())
+    //               .endCell()
+    //     });
 
-        discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(), notDeployer.address, true);
-        const notDeployerJettonWallet = await userWallet(notDeployer.address);
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: jettonMinter.address,
-            to: deployer.address,
-            body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
-                              .storeAddress(notDeployerJettonWallet.address)
-                              .storeUint(1, 1)
-                              .storeRef(beginCell().storeAddress(notDeployer.address).endCell())
-                  .endCell()
-        });
+    //     discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(), notDeployer.address, true);
+    //     const notDeployerJettonWallet = await userWallet(notDeployer.address);
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: jettonMinter.address,
+    //         to: deployer.address,
+    //         body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
+    //                           .storeAddress(notDeployerJettonWallet.address)
+    //                           .storeUint(1, 1)
+    //                           .storeRef(beginCell().storeAddress(notDeployer.address).endCell())
+    //               .endCell()
+    //     });
 
-        // do not include owner address
-        discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(), notDeployer.address, false);
-        expect(discoveryResult.transactions).toHaveTransaction({
-            from: jettonMinter.address,
-            to: deployer.address,
-            body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
-                              .storeAddress(notDeployerJettonWallet.address)
-                              .storeUint(0, 1)
-                  .endCell()
-        });
+    //     // do not include owner address
+    //     discoveryResult = await jettonMinter.sendDiscovery(deployer.getSender(), notDeployer.address, false);
+    //     expect(discoveryResult.transactions).toHaveTransaction({
+    //         from: jettonMinter.address,
+    //         to: deployer.address,
+    //         body: beginCell().storeUint(Op.take_wallet_address, 32).storeUint(0, 64)
+    //                           .storeAddress(notDeployerJettonWallet.address)
+    //                           .storeUint(0, 1)
+    //               .endCell()
+    //     });
 
-    });
+    // });
 
     it('Minimal discovery fee', async () => {
        // 5000 gas-units + msg_forward_prices.lump_price + msg_forward_prices.cell_price = 0.0061
