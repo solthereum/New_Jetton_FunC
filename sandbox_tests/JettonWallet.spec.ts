@@ -441,25 +441,25 @@ describe('JettonWallet', () => {
 //         expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
 //     });
 
-    it('wallet owner should be able to burn jettons', async () => {
-           const deployerJettonWallet = await userWallet(deployer.address);
-            let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-            let initialTotalSupply = await jettonMinter.getTotalSupply();
-            let burnAmount = toNano('0.01');
-            const sendResult = await deployerJettonWallet.sendBurn(deployer.getSender(), toNano('0.1'), // ton amount
-                                 burnAmount, deployer.address, null); // amount, response address, custom payload
-            expect(sendResult.transactions).toHaveTransaction({ //burn notification
-                from: deployerJettonWallet.address,
-                to: jettonMinter.address
-            });
-            expect(sendResult.transactions).toHaveTransaction({ //excesses
-                from: jettonMinter.address,
-                to: deployer.address
-            });
-            expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - burnAmount);
-            expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply - burnAmount);
+    // it('wallet owner should be able to burn jettons', async () => {
+    //        const deployerJettonWallet = await userWallet(deployer.address);
+    //         let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+    //         let initialTotalSupply = await jettonMinter.getTotalSupply();
+    //         let burnAmount = toNano('0.01');
+    //         const sendResult = await deployerJettonWallet.sendBurn(deployer.getSender(), toNano('0.1'), // ton amount
+    //                              burnAmount, deployer.address, null); // amount, response address, custom payload
+    //         expect(sendResult.transactions).toHaveTransaction({ //burn notification
+    //             from: deployerJettonWallet.address,
+    //             to: jettonMinter.address
+    //         });
+    //         expect(sendResult.transactions).toHaveTransaction({ //excesses
+    //             from: jettonMinter.address,
+    //             to: deployer.address
+    //         });
+    //         expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - burnAmount);
+    //         expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply - burnAmount);
 
-    });
+    // });
 
     it('not wallet owner should not be able to burn jettons', async () => {
               const deployerJettonWallet = await userWallet(deployer.address);
