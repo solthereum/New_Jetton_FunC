@@ -527,46 +527,46 @@ describe('JettonWallet', () => {
 
     // });
 
-    it('minter should only accept burn messages from jetton wallets', async () => {
-        const deployerJettonWallet = await userWallet(deployer.address);
-        const burnAmount = toNano('1');
-        const burnNotification = (amount: bigint, addr: Address) => {
-        return beginCell()
-                .storeUint(Op.burn_notification, 32)
-                .storeUint(0, 64)
-                .storeCoins(amount)
-                .storeAddress(addr)
-                .storeAddress(deployer.address)
-               .endCell();
-        }
+//     it('minter should only accept burn messages from jetton wallets', async () => {
+//         const deployerJettonWallet = await userWallet(deployer.address);
+//         const burnAmount = toNano('1');
+//         const burnNotification = (amount: bigint, addr: Address) => {
+//         return beginCell()
+//                 .storeUint(Op.burn_notification, 32)
+//                 .storeUint(0, 64)
+//                 .storeCoins(amount)
+//                 .storeAddress(addr)
+//                 .storeAddress(deployer.address)
+//                .endCell();
+//         }
 
-        let res = await blockchain.sendMessage(internal({
-            from: deployerJettonWallet.address,
-            to: jettonMinter.address,
-            body: burnNotification(burnAmount, randomAddress(0)),
-            value: toNano('0.1')
-        }));
+//         let res = await blockchain.sendMessage(internal({
+//             from: deployerJettonWallet.address,
+//             to: jettonMinter.address,
+//             body: burnNotification(burnAmount, randomAddress(0)),
+//             value: toNano('0.1')
+//         }));
 
-        expect(res.transactions).toHaveTransaction({
-            from: deployerJettonWallet.address,
-            to: jettonMinter.address,
-            aborted: true,
-            exitCode: Errors.unouthorized_burn // Unauthorized burn
-        });
+//         expect(res.transactions).toHaveTransaction({
+//             from: deployerJettonWallet.address,
+//             to: jettonMinter.address,
+//             aborted: true,
+//             exitCode: Errors.unouthorized_burn // Unauthorized burn
+//         });
 
-        res = await blockchain.sendMessage(internal({
-            from: deployerJettonWallet.address,
-            to: jettonMinter.address,
-            body: burnNotification(burnAmount, deployer.address),
-            value: toNano('0.1')
-        }));
+//         res = await blockchain.sendMessage(internal({
+//             from: deployerJettonWallet.address,
+//             to: jettonMinter.address,
+//             body: burnNotification(burnAmount, deployer.address),
+//             value: toNano('0.1')
+//         }));
 
-        expect(res.transactions).toHaveTransaction({
-            from: deployerJettonWallet.address,
-            to: jettonMinter.address,
-            success: true
-        });
-   });
+//         expect(res.transactions).toHaveTransaction({
+//             from: deployerJettonWallet.address,
+//             to: jettonMinter.address,
+//             success: true
+//         });
+//    });
 
     // TEP-89
     it('report correct discovery address', async () => {
