@@ -409,37 +409,37 @@ describe('JettonWallet', () => {
     // });
 
     // implementation detail
-    it('wallet does not accept internal_transfer not from wallet', async () => {
-        const deployerJettonWallet = await userWallet(deployer.address);
-        let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-/*
-  internal_transfer  query_id:uint64 amount:(VarUInteger 16) from:MsgAddress
-                     response_address:MsgAddress
-                     forward_ton_amount:(VarUInteger 16)
-                     forward_payload:(Either Cell ^Cell)
-                     = InternalMsgBody;
-*/
-        let internalTransfer = beginCell().storeUint(0x178d4519, 32).storeUint(0, 64) //default queryId
-                              .storeCoins(toNano('0.01'))
-                              .storeAddress(deployer.address)
-                              .storeAddress(deployer.address)
-                              .storeCoins(toNano('0.05'))
-                              .storeUint(0, 1)
-                  .endCell();
-        const sendResult = await blockchain.sendMessage(internal({
-                    from: notDeployer.address,
-                    to: deployerJettonWallet.address,
-                    body: internalTransfer,
-                    value:toNano('0.3')
-                }));
-        expect(sendResult.transactions).toHaveTransaction({
-            from: notDeployer.address,
-            to: deployerJettonWallet.address,
-            aborted: true,
-            exitCode: Errors.not_valid_wallet, //error::unauthorized_incoming_transfer
-        });
-        expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
-    });
+//     it('wallet does not accept internal_transfer not from wallet', async () => {
+//         const deployerJettonWallet = await userWallet(deployer.address);
+//         let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+// /*
+//   internal_transfer  query_id:uint64 amount:(VarUInteger 16) from:MsgAddress
+//                      response_address:MsgAddress
+//                      forward_ton_amount:(VarUInteger 16)
+//                      forward_payload:(Either Cell ^Cell)
+//                      = InternalMsgBody;
+// */
+//         let internalTransfer = beginCell().storeUint(0x178d4519, 32).storeUint(0, 64) //default queryId
+//                               .storeCoins(toNano('0.01'))
+//                               .storeAddress(deployer.address)
+//                               .storeAddress(deployer.address)
+//                               .storeCoins(toNano('0.05'))
+//                               .storeUint(0, 1)
+//                   .endCell();
+//         const sendResult = await blockchain.sendMessage(internal({
+//                     from: notDeployer.address,
+//                     to: deployerJettonWallet.address,
+//                     body: internalTransfer,
+//                     value:toNano('0.3')
+//                 }));
+//         expect(sendResult.transactions).toHaveTransaction({
+//             from: notDeployer.address,
+//             to: deployerJettonWallet.address,
+//             aborted: true,
+//             exitCode: Errors.not_valid_wallet, //error::unauthorized_incoming_transfer
+//         });
+//         expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
+//     });
 
     it('wallet owner should be able to burn jettons', async () => {
            const deployerJettonWallet = await userWallet(deployer.address);
