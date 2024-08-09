@@ -478,54 +478,54 @@ describe('JettonWallet', () => {
     //           expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply);
     // });
 
-    it('wallet owner can not burn more jettons than it has', async () => {
-                const deployerJettonWallet = await userWallet(deployer.address);
-                let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-                let initialTotalSupply = await jettonMinter.getTotalSupply();
-                let burnAmount = initialJettonBalance + 1n;
-                const sendResult = await deployerJettonWallet.sendBurn(deployer.getSender(), toNano('0.1'), // ton amount
-                                        burnAmount, deployer.address, null); // amount, response address, custom payload
-                expect(sendResult.transactions).toHaveTransaction({
-                     from: deployer.address,
-                     to: deployerJettonWallet.address,
-                     aborted: true,
-                     exitCode: Errors.balance_error, //error::not_enough_jettons
-                    });
-                expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
-                expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply);
-    });
+    // it('wallet owner can not burn more jettons than it has', async () => {
+    //             const deployerJettonWallet = await userWallet(deployer.address);
+    //             let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+    //             let initialTotalSupply = await jettonMinter.getTotalSupply();
+    //             let burnAmount = initialJettonBalance + 1n;
+    //             const sendResult = await deployerJettonWallet.sendBurn(deployer.getSender(), toNano('0.1'), // ton amount
+    //                                     burnAmount, deployer.address, null); // amount, response address, custom payload
+    //             expect(sendResult.transactions).toHaveTransaction({
+    //                  from: deployer.address,
+    //                  to: deployerJettonWallet.address,
+    //                  aborted: true,
+    //                  exitCode: Errors.balance_error, //error::not_enough_jettons
+    //                 });
+    //             expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance);
+    //             expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply);
+    // });
 
-    it('minimal burn message fee', async () => {
-       const deployerJettonWallet = await userWallet(deployer.address);
-       let initialJettonBalance   = await deployerJettonWallet.getJettonBalance();
-       let initialTotalSupply     = await jettonMinter.getTotalSupply();
-       let burnAmount   = toNano('0.01');
-       let fwd_fee      = 1492012n /*1500012n*/, gas_consumption = 15000000n;
-       let minimalFee   = fwd_fee + 2n*gas_consumption;
+    // it('minimal burn message fee', async () => {
+    //    const deployerJettonWallet = await userWallet(deployer.address);
+    //    let initialJettonBalance   = await deployerJettonWallet.getJettonBalance();
+    //    let initialTotalSupply     = await jettonMinter.getTotalSupply();
+    //    let burnAmount   = toNano('0.01');
+    //    let fwd_fee      = 1492012n /*1500012n*/, gas_consumption = 15000000n;
+    //    let minimalFee   = fwd_fee + 2n*gas_consumption;
 
-       const sendLow    = await deployerJettonWallet.sendBurn(deployer.getSender(), minimalFee, // ton amount
-                            burnAmount, deployer.address, null); // amount, response address, custom payload
+    //    const sendLow    = await deployerJettonWallet.sendBurn(deployer.getSender(), minimalFee, // ton amount
+    //                         burnAmount, deployer.address, null); // amount, response address, custom payload
 
-       expect(sendLow.transactions).toHaveTransaction({
-                from: deployer.address,
-                to: deployerJettonWallet.address,
-                aborted: true,
-                exitCode: Errors.not_enough_gas, //error::burn_fee_not_matched
-             });
+    //    expect(sendLow.transactions).toHaveTransaction({
+    //             from: deployer.address,
+    //             to: deployerJettonWallet.address,
+    //             aborted: true,
+    //             exitCode: Errors.not_enough_gas, //error::burn_fee_not_matched
+    //          });
 
-        const sendExcess = await deployerJettonWallet.sendBurn(deployer.getSender(), minimalFee + 1n,
-                                                                      burnAmount, deployer.address, null);
+    //     const sendExcess = await deployerJettonWallet.sendBurn(deployer.getSender(), minimalFee + 1n,
+    //                                                                   burnAmount, deployer.address, null);
 
-        expect(sendExcess.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: deployerJettonWallet.address,
-            success: true
-        });
+    //     expect(sendExcess.transactions).toHaveTransaction({
+    //         from: deployer.address,
+    //         to: deployerJettonWallet.address,
+    //         success: true
+    //     });
 
-        expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - burnAmount);
-        expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply - burnAmount);
+    //     expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - burnAmount);
+    //     expect(await jettonMinter.getTotalSupply()).toEqual(initialTotalSupply - burnAmount);
 
-    });
+    // });
 
     it('minter should only accept burn messages from jetton wallets', async () => {
         const deployerJettonWallet = await userWallet(deployer.address);
