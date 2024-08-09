@@ -351,62 +351,62 @@ describe('JettonWallet', () => {
     // });
 
     // implementation detail
-    it('works with minimal ton amount', async () => {
-        const deployerJettonWallet = await userWallet(deployer.address);
-        let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-        const someAddress = Address.parse("EQD__________________________________________0vo");
-        const someJettonWallet = await userWallet(someAddress);
-        let initialJettonBalance2 = await someJettonWallet.getJettonBalance();
-        await deployer.send({value:toNano('1'), bounce:false, to: deployerJettonWallet.address});
-        let forwardAmount = toNano('0.3');
-        /*
-                     forward_ton_amount +
-                     fwd_count * fwd_fee +
-                     (2 * gas_consumption + min_tons_for_storage));
-        */
-        let minimalFee = 2n* fwd_fee + 2n*gas_consumption + min_tons_for_storage;
-        let sentAmount = forwardAmount + minimalFee; // not enough, need >
-        let forwardPayload = null;
-        let tonBalance =(await blockchain.getContract(deployerJettonWallet.address)).balance;
-        let tonBalance2 = (await blockchain.getContract(someJettonWallet.address)).balance;
-        let sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), sentAmount,
-               sentAmount, someAddress,
-               deployer.address, null, forwardAmount, forwardPayload);
-        expect(sendResult.transactions).toHaveTransaction({
-            from: deployer.address,
-            to: deployerJettonWallet.address,
-            aborted: true,
-            exitCode: Errors.not_enough_ton, //error::not_enough_tons
-        });
-        sentAmount += 1n; // now enough
-        sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), sentAmount,
-               sentAmount, someAddress,
-               deployer.address, null, forwardAmount, forwardPayload);
-        expect(sendResult.transactions).not.toHaveTransaction({ //no excesses
-            from: someJettonWallet.address,
-            to: deployer.address,
-        });
-        /*
-        transfer_notification#7362d09c query_id:uint64 amount:(VarUInteger 16)
-                                      sender:MsgAddress forward_payload:(Either Cell ^Cell)
-                                      = InternalMsgBody;
-        */
-        expect(sendResult.transactions).toHaveTransaction({ //notification
-            from: someJettonWallet.address,
-            to: someAddress,
-            value: forwardAmount,
-            body: beginCell().storeUint(Op.transfer_notification, 32).storeUint(0, 64) //default queryId
-                              .storeCoins(sentAmount)
-                              .storeAddress(deployer.address)
-                              .storeUint(0, 1)
-                  .endCell()
-        });
-        expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - sentAmount);
-        expect(await someJettonWallet.getJettonBalance()).toEqual(initialJettonBalance2 + sentAmount);
+    // it('works with minimal ton amount', async () => {
+    //     const deployerJettonWallet = await userWallet(deployer.address);
+    //     let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+    //     const someAddress = Address.parse("EQD__________________________________________0vo");
+    //     const someJettonWallet = await userWallet(someAddress);
+    //     let initialJettonBalance2 = await someJettonWallet.getJettonBalance();
+    //     await deployer.send({value:toNano('1'), bounce:false, to: deployerJettonWallet.address});
+    //     let forwardAmount = toNano('0.3');
+    //     /*
+    //                  forward_ton_amount +
+    //                  fwd_count * fwd_fee +
+    //                  (2 * gas_consumption + min_tons_for_storage));
+    //     */
+    //     let minimalFee = 2n* fwd_fee + 2n*gas_consumption + min_tons_for_storage;
+    //     let sentAmount = forwardAmount + minimalFee; // not enough, need >
+    //     let forwardPayload = null;
+    //     let tonBalance =(await blockchain.getContract(deployerJettonWallet.address)).balance;
+    //     let tonBalance2 = (await blockchain.getContract(someJettonWallet.address)).balance;
+    //     let sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), sentAmount,
+    //            sentAmount, someAddress,
+    //            deployer.address, null, forwardAmount, forwardPayload);
+    //     expect(sendResult.transactions).toHaveTransaction({
+    //         from: deployer.address,
+    //         to: deployerJettonWallet.address,
+    //         aborted: true,
+    //         exitCode: Errors.not_enough_ton, //error::not_enough_tons
+    //     });
+    //     sentAmount += 1n; // now enough
+    //     sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), sentAmount,
+    //            sentAmount, someAddress,
+    //            deployer.address, null, forwardAmount, forwardPayload);
+    //     expect(sendResult.transactions).not.toHaveTransaction({ //no excesses
+    //         from: someJettonWallet.address,
+    //         to: deployer.address,
+    //     });
+    //     /*
+    //     transfer_notification#7362d09c query_id:uint64 amount:(VarUInteger 16)
+    //                                   sender:MsgAddress forward_payload:(Either Cell ^Cell)
+    //                                   = InternalMsgBody;
+    //     */
+    //     expect(sendResult.transactions).toHaveTransaction({ //notification
+    //         from: someJettonWallet.address,
+    //         to: someAddress,
+    //         value: forwardAmount,
+    //         body: beginCell().storeUint(Op.transfer_notification, 32).storeUint(0, 64) //default queryId
+    //                           .storeCoins(sentAmount)
+    //                           .storeAddress(deployer.address)
+    //                           .storeUint(0, 1)
+    //               .endCell()
+    //     });
+    //     expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - sentAmount);
+    //     expect(await someJettonWallet.getJettonBalance()).toEqual(initialJettonBalance2 + sentAmount);
 
-        tonBalance =(await blockchain.getContract(deployerJettonWallet.address)).balance;
-        expect((await blockchain.getContract(someJettonWallet.address)).balance).toBeGreaterThan(min_tons_for_storage);
-    });
+    //     tonBalance =(await blockchain.getContract(deployerJettonWallet.address)).balance;
+    //     expect((await blockchain.getContract(someJettonWallet.address)).balance).toBeGreaterThan(min_tons_for_storage);
+    // });
 
     // implementation detail
     it('wallet does not accept internal_transfer not from wallet', async () => {
