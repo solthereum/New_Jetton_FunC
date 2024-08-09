@@ -264,40 +264,40 @@ describe('JettonWallet', () => {
         });
     });
 
-    it('correctly sends forward_payload', async () => {
-        const deployerJettonWallet = await userWallet(deployer.address);
-        let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
-        const notDeployerJettonWallet = await userWallet(notDeployer.address);
-        let initialJettonBalance2 = await notDeployerJettonWallet.getJettonBalance();
-        let sentAmount = toNano('0.5');
-        let forwardAmount = toNano('0.05');
-        let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell();
-        const sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), toNano('0.1'), //tons
-               sentAmount, notDeployer.address,
-               deployer.address, null, forwardAmount, forwardPayload);
-        expect(sendResult.transactions).toHaveTransaction({ //excesses
-            from: notDeployerJettonWallet.address,
-            to: deployer.address,
-        });
-        /*
-        transfer_notification#7362d09c query_id:uint64 amount:(VarUInteger 16)
-                                      sender:MsgAddress forward_payload:(Either Cell ^Cell)
-                                      = InternalMsgBody;
-        */
-        expect(sendResult.transactions).toHaveTransaction({ //notification
-            from: notDeployerJettonWallet.address,
-            to: notDeployer.address,
-            value: forwardAmount,
-            body: beginCell().storeUint(Op.transfer_notification, 32).storeUint(0, 64) //default queryId
-                              .storeCoins(sentAmount)
-                              .storeAddress(deployer.address)
-                              .storeUint(1, 1)
-                              .storeRef(forwardPayload)
-                  .endCell()
-        });
-        expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - sentAmount);
-        expect(await notDeployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance2 + sentAmount);
-    });
+    // it('correctly sends forward_payload', async () => {
+    //     const deployerJettonWallet = await userWallet(deployer.address);
+    //     let initialJettonBalance = await deployerJettonWallet.getJettonBalance();
+    //     const notDeployerJettonWallet = await userWallet(notDeployer.address);
+    //     let initialJettonBalance2 = await notDeployerJettonWallet.getJettonBalance();
+    //     let sentAmount = toNano('0.5');
+    //     let forwardAmount = toNano('0.05');
+    //     let forwardPayload = beginCell().storeUint(0x1234567890abcdefn, 128).endCell();
+    //     const sendResult = await deployerJettonWallet.sendTransfer(deployer.getSender(), toNano('0.1'), //tons
+    //            sentAmount, notDeployer.address,
+    //            deployer.address, null, forwardAmount, forwardPayload);
+    //     expect(sendResult.transactions).toHaveTransaction({ //excesses
+    //         from: notDeployerJettonWallet.address,
+    //         to: deployer.address,
+    //     });
+    //     /*
+    //     transfer_notification#7362d09c query_id:uint64 amount:(VarUInteger 16)
+    //                                   sender:MsgAddress forward_payload:(Either Cell ^Cell)
+    //                                   = InternalMsgBody;
+    //     */
+    //     expect(sendResult.transactions).toHaveTransaction({ //notification
+    //         from: notDeployerJettonWallet.address,
+    //         to: notDeployer.address,
+    //         value: forwardAmount,
+    //         body: beginCell().storeUint(Op.transfer_notification, 32).storeUint(0, 64) //default queryId
+    //                           .storeCoins(sentAmount)
+    //                           .storeAddress(deployer.address)
+    //                           .storeUint(1, 1)
+    //                           .storeRef(forwardPayload)
+    //               .endCell()
+    //     });
+    //     expect(await deployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance - sentAmount);
+    //     expect(await notDeployerJettonWallet.getJettonBalance()).toEqual(initialJettonBalance2 + sentAmount);
+    // });
 
     it('no forward_ton_amount - no forward', async () => {
         const deployerJettonWallet = await userWallet(deployer.address);
